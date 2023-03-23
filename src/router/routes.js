@@ -19,7 +19,8 @@ import Items from '../pages/Items.vue'
 import ListItems from '../components/Item/ListItems.vue'
 import CreateItem from '../components/Item/CreateItem.vue'
 import EditItem from '../components/Item/EditItem.vue'
-import InfoItem from '../components/Item/InfoItem.vue'
+import InfoItem from '../components/Item/itemData/InfoItem.vue'
+import InfoItems from '../components/Item/itemData/InfoItems.vue'
 
 
 const routes = [
@@ -36,6 +37,7 @@ const routes = [
             { path: 'create', name: 'createItem', component: CreateItem, props: false, },
             { path: 'edit/:id', name: 'editItem', component: EditItem, props: false, },
             { path: '/items/:collection/:id', name: 'infoItem', component: InfoItem, props: true, },
+            { path: '/items/:collection/dataInfo', name: 'infoItems', component: InfoItems, props: true, },
 
         ],props: true, meta: { requiresAuth: true } },
         { path: '/login',  name: 'login', component: Login },

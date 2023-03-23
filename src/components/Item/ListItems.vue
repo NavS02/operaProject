@@ -5,6 +5,15 @@
         <font-awesome-icon icon="fa-solid fa-plus" fixed-width />
         <span class="ms-1">New</span>
       </button>
+      <button
+        class="btn btn-sm btn-secondary"
+        style="float: right"
+        v-if="printer"
+        @click="printItems()"
+      >
+        <font-awesome-icon icon="fa-solid fa-print" />
+        <span class="ms-1">Print</span>
+      </button>
     </router-link>
   </header>
 
@@ -16,6 +25,13 @@
 
     <template #cell(actions)="{ item, field, value }">
       <div class="actions">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          :id="item.id"
+          :value="item.id"
+          @change="onCheckPrinter(item)"
+        />
         <button
           title="edit"
           class="btn btn-sm btn-light"
@@ -33,7 +49,7 @@
         <button
           title="Info"
           class="btn btn-sm btn-light"
-          @click="onPrintClicked(item)"
+          @click="onInfoClicked(item)"
         >
           <font-awesome-icon icon="fa-solid fa-eye" />
         </button>
@@ -50,7 +66,7 @@ import * as settings from "../../settings/";
 import Table from "../common/Table/Table.vue";
 
 export default {
-  components: { Table,  },
+  components: { Table },
   setup() {
     const route = useRoute();
     const router = useRouter();
@@ -58,6 +74,8 @@ export default {
     const collection = ref("");
     const items = ref([]);
     const fields = ref([]);
+    const printer = ref(false);
+    const itemSelected = ref([]);
 
     // watch the route and update data based on the collection param
     watch(
@@ -102,20 +120,51 @@ export default {
       const confirmed = confirm("Are you sure you want to delete this item?");
       if (confirmed) deleteItem(item);
     }
-    function onPrintClicked(item) {
+
+    function printItems() {
+      console.log(itemSelected.value)
+
+      router.push({
+        name: "infoItems",
+        params: { collection: collection.value, items:itemSelected.value  },
+
+      });
+    }
+    function onInfoClicked(item) {
       router.push({
         name: "infoItem",
-        params: { collection: collection.value, id: item.id, },
+        params: { collection: collection.value, id: item.id },
       });
+    }
+    function onCheckPrinter(item) {
+      let clicked = document.getElementById(item.id).checked;
+      if (clicked == true) {
+        printer.value = true;
+        itemSelected.value.push(item);
+      } else {
+        const index = itemSelected.value.findIndex(
+          (selectedItem) => selectedItem.id === item.id
+        );
+        if (index !== -1) {
+          itemSelected.value.splice(index, 1);
+        }
+        if (itemSelected.value.length === 0) {
+          printer.value = false;
+        }
+      }
     }
 
     return {
       items,
       fields,
       createLink,
+      printer,
+      itemSelected,
       onEditClicked,
       onDeleteClicked,
-      onPrintClicked,
+      onInfoClicked,
+      onCheckPrinter,
+      printItems
     };
   },
   props: {
